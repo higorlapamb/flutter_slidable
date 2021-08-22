@@ -26,6 +26,7 @@ class Slidable extends StatefulWidget {
     this.direction = Axis.horizontal,
     this.dragStartBehavior = DragStartBehavior.down,
     this.useTextDirection = true,
+    this.onControllerCreated,
     required this.child,
   }) : super(key: key);
 
@@ -98,6 +99,9 @@ class Slidable extends StatefulWidget {
   /// {@macro flutter.widgets.ProxyWidget.child}
   final Widget child;
 
+  /// Returns the controller as soon as it was created.
+  final Function(SlidableController controller)? onControllerCreated;
+
   @override
   _SlidableState createState() => _SlidableState();
 
@@ -133,6 +137,7 @@ class _SlidableState extends State<Slidable>
     super.initState();
     controller = SlidableController(this)
       ..actionPaneType.addListener(handleActionPanelTypeChanged);
+    widget.onControllerCreated?.call(controller!);
   }
 
   @override
