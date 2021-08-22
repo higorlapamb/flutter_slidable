@@ -226,6 +226,10 @@ class SlidableController {
     Duration duration = _defaultMovementDuration,
     Curve curve = _defaultCurve,
   }) async {
+    if (isDisposingOrDisposed) {
+      return;
+    }
+
     _closing = true;
     await _animationController.animateBack(
       0,
@@ -289,7 +293,7 @@ class SlidableController {
   }) async {
     assert(ratio >= -1 && ratio <= 1);
 
-    if (_closing) {
+    if (_closing || _isDisposingOrDisposed) {
       return;
     }
 
@@ -311,6 +315,9 @@ class SlidableController {
     Duration duration = _defaultMovementDuration,
     Curve curve = _defaultCurve,
   }) async {
+    if (isDisposingOrDisposed) {
+      return;
+    }
     await _animationController.animateTo(
       1,
       duration: _defaultMovementDuration,
@@ -319,8 +326,14 @@ class SlidableController {
     resizeRequest.value = request;
   }
 
+  /// True if the dispose method has been called.
+  bool get isDisposingOrDisposed => _isDisposingOrDisposed;
+
+  bool _isDisposingOrDisposed = false;
+
   /// Disposes the controller.
   void dispose() {
+    _isDisposingOrDisposed = true;
     _animationController.removeListener(_onRatioChanged);
     _animationController.stop();
     _animationController.dispose();
